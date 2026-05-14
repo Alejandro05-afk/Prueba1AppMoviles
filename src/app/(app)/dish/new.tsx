@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useForm } from '@tanstack/react-form';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { Button } from '@/shared/ui/Button';
@@ -11,6 +11,7 @@ import { supabase } from '@/shared/api/supabase';
 import { useAuth } from '@/features/auth/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
 import { Feather } from '@expo/vector-icons';
+import { getPendingLocation } from '@/shared/utils/pending-location';
 
 export default function NewDishScreen() {
   const router = useRouter();
@@ -145,6 +146,25 @@ export default function NewDishScreen() {
     }
   };
 
+  // Check for location returned from map-picker
+  useFocusEffect(
+    useCallback(() => {
+      const loc = getPendingLocation();
+      if (!loc) return;
+      form.setFieldValue('latitude', loc.lat);
+      form.setFieldValue('longitude', loc.lng);
+      Location.reverseGeocodeAsync({
+        latitude: loc.lat,
+        longitude: loc.lng,
+      }).then(([geo]) => {
+        if (geo) {
+          form.setFieldValue('city', geo.city || geo.subregion || '');
+          form.setFieldValue('country', geo.country || '');
+        }
+      });
+    }, [form])
+  );
+
   return (
     <ScrollView className="flex-1 bg-dominoWhite" contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
       
@@ -242,6 +262,15 @@ export default function NewDishScreen() {
                             variant="outline"
                             loading={isLocating}
                             icon={<Feather name="navigation" size={18} color="#006492" />}
+                          />
+
+                          <View className="h-3" />
+
+                          <Button 
+                            title="Seleccionar en mapa"
+                            onPress={() => router.push('/(app)/dish/map-picker' as any)}
+                            variant="secondary"
+                            icon={<Feather name="map" size={18} color="#ffffff" />}
                           />
                         </View>
                       )}

@@ -15,12 +15,13 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 interface DishCardProps {
   dish: Dish;
   onDelete: (id: string) => void;
+  onPress?: (id: string) => void;
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const TRANSLATE_X_THRESHOLD = -SCREEN_WIDTH * 0.3;
 
-export function DishCard({ dish, onDelete }: DishCardProps) {
+export function DishCard({ dish, onDelete, onPress }: DishCardProps) {
   const translateX = useSharedValue(0);
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
@@ -45,6 +46,11 @@ export function DishCard({ dish, onDelete }: DishCardProps) {
   const tapGesture = Gesture.Tap()
     .onBegin(() => {
       scale.value = withSpring(0.95);
+    })
+    .onEnd(() => {
+      if (onPress) {
+        runOnJS(onPress)(dish.id);
+      }
     })
     .onFinalize(() => {
       scale.value = withSpring(1);

@@ -38,6 +38,22 @@ export default function AppLayout() {
           presentation: 'modal'
         }} 
       />
+      <Stack.Screen 
+        name="dish/map-picker" 
+        options={{ 
+          title: 'Seleccionar ubicación',
+          headerStyle: { backgroundColor: '#006492' },
+          headerTintColor: '#fff',
+        }} 
+      />
+      <Stack.Screen 
+        name="dish/[id]" 
+        options={{ 
+          title: 'Detalle del Platillo',
+          headerStyle: { backgroundColor: '#006492' },
+          headerTintColor: '#fff',
+        }} 
+      />
     </Stack>
   );
 }

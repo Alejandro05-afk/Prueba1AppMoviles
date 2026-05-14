@@ -26,6 +26,10 @@ export default function DishesList() {
     deleteMutation.mutate(id);
   };
 
+  const handlePress = (id: string) => {
+    router.push({ pathname: '/(app)/dish/[id]', params: { id } } as any);
+  };
+
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
@@ -50,7 +54,7 @@ export default function DishesList() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
         renderItem={({ item }) => (
-          <DishCard dish={item} onDelete={handleDelete} />
+          <DishCard dish={item} onDelete={handleDelete} onPress={handlePress} />
         )}
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center mt-20">
